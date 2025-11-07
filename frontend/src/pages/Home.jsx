@@ -1,7 +1,7 @@
 import { ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { MapPin, Calculator, Sparkles, ArrowRight } from "lucide-react";
+import { MapPin, Calculator, Sparkles, ArrowRight,Car } from "lucide-react";
 
 
 export const Home = () => {
@@ -17,8 +17,12 @@ export const Home = () => {
           <h2 className="text-white text-2xl font-bold mt-2">Like Never before</h2>
         </div>
         <div className="space-x-5 pt-5">
-            <button className="text-center px-6 py-2 border-amber-300 bg-amber-500 rounded-2xl text-white font-medium hover:bg-amber-400 ">Explore</button>
-            <button className="text-center px-6 py-2 border-amber-300 bg-amber-500 rounded-2xl text-white font-medium hover:bg-amber-400 ">Sign Up </button>
+          <button className="relative px-6 py-2 rounded-2xl font-semibold text-white bg-gradient-to-b from-amber-400 to-amber-600 shadow-[0_4px_0_#b45309] transition-all duration-300 hover:shadow-[0_6px_12px_rgba(245,158,11,0.6)] hover:-translate-y-1 active:translate-y-0 active:shadow-[0_2px_0_#b45309]">
+            Explore
+          </button>
+          <button className="relative px-6 py-2 rounded-2xl font-semibold text-white bg-gradient-to-b from-amber-400 to-amber-600 shadow-[0_4px_0_#b45309] transition-all duration-300 hover:shadow-[0_6px_12px_rgba(245,158,11,0.6)] hover:-translate-y-1 active:translate-y-0 active:shadow-[0_2px_0_#b45309]">
+            Sign Up
+          </button>
         </div>
             <motion.div
               animate={{ y: [0, 10, 0] }}  // moves down slightly and back up
@@ -33,14 +37,14 @@ export const Home = () => {
             </motion.div>
       </div>
       {/* Features Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-muted/30 bg-linear-to-b from-white to-amber-400">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif  font-bold mb-4">What We Offer</h2>
             <p className="text-amber-600 text-lg">Everything you need for your Delhi adventure</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Link to="/popular-places" className="group">
+            <Link to="/Places" className="group">
               <div className="bg-card p-8 rounded-lg shadow-lg hover:shadow-[var(--shadow-hover)] transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <MapPin className="h-6 w-6 text-amber-600" />
@@ -49,12 +53,12 @@ export const Home = () => {
                 <p className="text-muted-foreground">Discover popular attractions and hidden gems across Delhi</p>
               </div>
             </Link>
-            <Link to="/cab-calculator" className="group">
+            <Link to="/cab-booking" className="group">
               <div className="bg-card p-8 rounded-lg shadow-lg hover:shadow-[var(--shadow-hover)] transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                 <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4 group-hover:bg-secondary/20 transition-colors">
-                  <Calculator className="h-6 w-6 text-amber-600" />
+                  <Car className="h-8 w-8 text-amber-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Cab Calculator</h3>
+                <h3 className="text-xl font-bold mb-2">Cab Booking</h3>
                 <p className="text-muted-foreground">Calculate estimated fares for your journey</p>
               </div>
             </Link>

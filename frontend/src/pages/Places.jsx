@@ -5,7 +5,7 @@ import redFort from "@/assets/redfort.jpeg";
 import qutubMinar from "@/assets/qutub-minar.jpeg";
 import lotusTemple from "@/assets/lotustemple.jpeg";
 import humayunTomb from "@/assets/humayutomb.jpeg";
-import { Search } from "lucide-react";
+import { Search,MapPin } from "lucide-react";
 
 const popularPlaces = [
   {
@@ -47,10 +47,10 @@ export const Places = () => {
   );
 
   return (
-    <main className="min-h-screen pt-24 pb-16 bg-gradient-to-b from-white to-amber-600">
+    <main className="min-h-screen pt-24 pb-16 bg-linear-to-b from-white to-amber-600">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-amber-600">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-amber-600 font-serif">
             Popular Tourist Places
           </h1>
           <p className="text-muted-foreground text-lg mb-8">
@@ -83,7 +83,10 @@ export const Places = () => {
               <div className="p-4 text-left">
                 <h3 className="text-xl font-semibold mb-2">{place.name}</h3>
                 <p className="text-muted-foreground mb-2">{place.description}</p>
-                <p className="text-sm text-gray-500">{place.location}</p>
+                <div className="flex items-center text-sm text-gray-500 gap-1">
+                  <MapPin className="w-4 h-4 text-amber-600" />
+                  <span>{place.location}</span>
+                </div>
               </div>
             </Card>
           ))}
