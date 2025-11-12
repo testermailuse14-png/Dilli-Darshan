@@ -3,6 +3,7 @@ import HiddenGemCard from "@/components/HiddenGemCard";
 import HiddenGemsSubmit from "@/components/HiddenGemsSubmit";
 import GoogleMapComponent from "@/components/GoogleMapComponent";
 import { getPhotoForPlace, geocodeAddress } from '@/lib/placeService';
+import { MapPin } from "lucide-react";
 
 const initialHiddenGems = [
   {

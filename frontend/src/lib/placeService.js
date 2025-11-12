@@ -7,7 +7,8 @@ const loadGoogleMaps = () => {
 
   if (googleMapsLoadingPromise) return googleMapsLoadingPromise;
 
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API;
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  console.log(apiKey);
   if (!apiKey) {
     return Promise.reject(new Error('VITE_GOOGLE_MAPS_API is not set'));
   }
