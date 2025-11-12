@@ -14,13 +14,15 @@ const loadGoogleMaps = () => {
 
   googleMapsLoadingPromise = new Promise((resolve, reject) => {
     // If a script is already present, hook into its events
-    const existing = document.querySelector('script[data-google-maps="loader"]');
-    if (existing) {
+    const existingTagged = document.querySelector('script[data-google-maps="loader"]');
+    const existingAny = existingTagged || document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+
+    if (existingAny) {
       if (window.google && window.google.maps) {
         resolve();
       } else {
-        existing.addEventListener('load', () => resolve());
-        existing.addEventListener('error', (e) => reject(e));
+        existingAny.addEventListener('load', () => resolve());
+        existingAny.addEventListener('error', (e) => reject(e));
       }
       return;
     }
