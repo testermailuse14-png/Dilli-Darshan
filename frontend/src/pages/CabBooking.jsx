@@ -1,6 +1,4 @@
-
-
-import CabCalculator from "@/components/Calculator";
+import DistanceCalculator from "@/components/DistanceCalculator";
 
 export const CabCalculatorPage = () => {
   return (
@@ -11,12 +9,12 @@ export const CabCalculatorPage = () => {
             Cab Fare Calculator
           </h1>
           <p className="text-muted-foreground text-lg">
-            Calculate estimated cab fares for your Delhi journey
+            Calculate estimated cab fares based on actual distance using Google Maps
           </p>
         </div>
-        
+
         <div className="max-w-2xl mx-auto">
-          <CabCalculator />
+          <DistanceCalculator />
         </div>
       </div>
     </main>
