@@ -124,10 +124,6 @@ export const DistanceCalculator = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <LoadScript
-          googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API}
-          libraries={['places']}
-        >
           <div className="space-y-2">
             <Label htmlFor="pickup">Pickup Location</Label>
             <Autocomplete
@@ -208,7 +204,6 @@ export const DistanceCalculator = () => {
               <p className="text-xs text-muted-foreground">*This is an estimated fare. Actual fare may vary based on traffic and demand.</p>
             </div>
           )}
-        </LoadScript>
       </CardContent>
     </Card>
   );
