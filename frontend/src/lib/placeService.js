@@ -219,3 +219,26 @@ export const getPhotoForPlace = (name, lat, lng, callback) => {
     })
     .catch(() => callback(null, 'LOAD_ERROR'));
 };
+
+export const geocodeAddress = (address, callback) => {
+  if (!address) {
+    callback(null, 'NO_ADDRESS');
+    return;
+  }
+
+  loadGoogleMaps()
+    .then(() => {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address }, (results, status) => {
+        const G = (typeof window !== 'undefined' && window.google) ? window.google : null;
+        const okStatus = (G && G.maps) ? G.maps.GeocoderStatus.OK : 'OK';
+        if (status === okStatus && results && results.length) {
+          const loc = results[0].geometry.location;
+          callback({ lat: loc.lat(), lng: loc.lng(), formatted_address: results[0].formatted_address }, null);
+        } else {
+          callback(null, status);
+        }
+      });
+    })
+    .catch(() => callback(null, 'LOAD_ERROR'));
+};
