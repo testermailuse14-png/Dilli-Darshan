@@ -7,26 +7,45 @@ import { Label } from "@/components/ui/label";
 import { Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
-const HiddenGemsSubmit = () => {
+const HiddenGemsSubmit = ({ onAdd }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [submitter, setSubmitter] = useState("");
+  const [address, setAddress] = useState("");
+  const [lat, setLat] = useState("");
+  const [lng, setLng] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!name || !description || !submitter) {
-      toast.error("Please fill in all fields");
+    if (!name) {
+      toast.error("Please provide the place name");
       return;
     }
 
-    // In a real app, this would save to a database
-    toast.success("Thank you for sharing this hidden gem!");
+    const payload = {
+      name,
+      description,
+      submittedBy: submitter || 'Anonymous',
+      address: address || '',
+      lat: lat ? parseFloat(lat) : null,
+      lng: lng ? parseFloat(lng) : null,
+    };
+
+    if (typeof onAdd === 'function') {
+      onAdd(payload);
+      toast.success("Thank you for sharing this hidden gem!");
+    } else {
+      toast.success("Thank you for sharing this hidden gem! (local only)");
+    }
 
     // Reset form
     setName("");
     setDescription("");
     setSubmitter("");
+    setAddress("");
+    setLat("");
+    setLng("");
   };
 
   return (
@@ -61,22 +80,52 @@ const HiddenGemsSubmit = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="submitter-name">Your Name</Label>
+          <Label htmlFor="submitter-name">Your Name</Label>
+          <Input
+            id="submitter-name"
+            placeholder="Enter your name..."
+            value={submitter}
+            onChange={(e) => setSubmitter(e.target.value)}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="gem-address">Address</Label>
             <Input
-              id="submitter-name"
-              placeholder="Enter your name..."
-              value={submitter}
-              onChange={(e) => setSubmitter(e.target.value)}
+              id="gem-address"
+              placeholder="Address or place name"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
             />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="gem-lat">Latitude</Label>
+            <Input
+              id="gem-lat"
+              placeholder="Latitude"
+              value={lat}
+              onChange={(e) => setLat(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="gem-lng">Longitude</Label>
+            <Input
+              id="gem-lng"
+              placeholder="Longitude"
+              value={lng}
+              onChange={(e) => setLng(e.target.value)}
+            />
+          </div>
+        </div>
 
-          <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700" size="lg">
-            Submit Hidden Gem
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
+        <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700" size="lg">
+          Submit Hidden Gem
+        </Button>
+      </form>
+    </CardContent>
+  </Card>
+);
 };
 
 export default HiddenGemsSubmit;

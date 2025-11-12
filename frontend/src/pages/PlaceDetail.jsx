@@ -18,10 +18,15 @@ import {
   Loader,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import redFort from "@/assets/redfort.jpeg";
+import qutubMinar from "@/assets/qutub-minar.jpeg";
+import lotusTemple from "@/assets/lotustemple.jpeg";
+import humayunTomb from "@/assets/humayutomb.jpeg";
 
 const popularPlaces = [
   {
     name: "Red Fort",
+    image: redFort,
     description: "A historic fort in Old Delhi that served as the main residence of the Mughal emperors.",
     location: "Netaji Subhash Marg, Chandni Chowk",
     lat: 28.6562,
@@ -29,6 +34,7 @@ const popularPlaces = [
   },
   {
     name: "Qutub Minar",
+    image: qutubMinar,
     description: "A UNESCO World Heritage Site, this 73-meter tall minaret is a masterpiece of Indo-Islamic architecture.",
     location: "Mehrauli",
     lat: 28.5244,
@@ -36,6 +42,7 @@ const popularPlaces = [
   },
   {
     name: "Lotus Temple",
+    image: lotusTemple,
     description: "A Bahá'í House of Worship noted for its flower-like shape and stunning modern architecture.",
     location: "Bahapur, Kalkaji",
     lat: 28.5535,
@@ -43,6 +50,7 @@ const popularPlaces = [
   },
   {
     name: "Humayun's Tomb",
+    image: humayunTomb,
     description: "The tomb of the Mughal Emperor Humayun, a UNESCO World Heritage Site and inspiration for the Taj Mahal.",
     location: "Nizamuddin East",
     lat: 28.5921,
@@ -78,8 +86,12 @@ export const PlaceDetail = () => {
           lng: predefinedPlace.lng,
           rating: 4.5,
           userRatingsTotal: 1000,
+          image: predefinedPlace.image,
         };
         setPlace(placeData);
+        if (predefinedPlace.image) {
+          setPhotos([predefinedPlace.image]);
+        }
         if (predefinedPlace.lat && predefinedPlace.lng) {
           fetchNearbyPlaces(predefinedPlace.lat, predefinedPlace.lng);
         }
@@ -126,9 +138,52 @@ export const PlaceDetail = () => {
   };
 
   const fetchNearbyPlaces = (lat, lng) => {
-    getNearbyPlaces(lat, lng, 'cafe', 1000, (results) => {
-      setNearbyPlaces(results.slice(0, 5));
-    });
+    if (!window.google) return;
+    const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+
+    service.nearbySearch(
+      {
+        location: { lat, lng },
+        radius: 1000,
+        type: 'cafe',
+      },
+      (results, status) => {
+        const ok = window.google?.maps?.places ? window.google.maps.places.PlacesServiceStatus.OK : 'OK';
+        if (status === ok && results && results.length) {
+          const top = results.slice(0, 5);
+
+          const enriched = top.map((r) =>
+            new Promise((resolve) => {
+              // Fetch details to use opening_hours.isOpen() which replaced open_now
+              service.getDetails(
+                { placeId: r.place_id, fields: ['opening_hours', 'name', 'rating', 'vicinity', 'types'] },
+                (detail, dStatus) => {
+                  const okDetail = window.google?.maps?.places ? window.google.maps.places.PlacesServiceStatus.OK : 'OK';
+                  let isOpenNow = false;
+                  if (dStatus === okDetail && detail && detail.opening_hours && typeof detail.opening_hours.isOpen === 'function') {
+                    try {
+                      isOpenNow = detail.opening_hours.isOpen();
+                    } catch (e) {
+                      isOpenNow = false;
+                    }
+                  }
+
+                  resolve({
+                    ...r,
+                    isOpenNow,
+                    vicinity: r.vicinity,
+                    types: r.types,
+                    rating: r.rating,
+                  });
+                }
+              );
+            })
+          );
+
+          Promise.all(enriched).then((items) => setNearbyPlaces(items));
+        }
+      }
+    );
   };
 
   const handleShare = () => {
@@ -433,7 +488,7 @@ export const PlaceDetail = () => {
                           </div>
                           <p className="text-xs text-gray-600 mb-2">{nearby.vicinity}</p>
                           <div className="flex gap-2 flex-wrap">
-                            {nearby.opening_hours?.open_now && (
+                            {nearby.isOpenNow && (
                               <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
                                 Open Now
                               </span>

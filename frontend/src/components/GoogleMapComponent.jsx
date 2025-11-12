@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { GoogleMap, LoadScript, Marker, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
+import { GoogleMap, Marker, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
 
 const mapContainerStyle = {
   width: '100%',
@@ -38,10 +38,6 @@ export const GoogleMapComponent = ({
   const containerStyle = { ...mapContainerStyle, height };
 
   return (
-    <LoadScript
-      googleMapsApiKey={import.meta.env.REACT_APP_GOOGLE_MAPS_API}
-      libraries={['places', 'geometry']}
-    >
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -97,7 +93,6 @@ export const GoogleMapComponent = ({
           />
         )}
       </GoogleMap>
-    </LoadScript>
   );
 };
 

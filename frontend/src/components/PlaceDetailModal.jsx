@@ -75,8 +75,38 @@ export const PlaceDetailModal = ({ place, isOpen, onClose }) => {
           maxResults: 6,
         },
         (results, status) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-            setNearbyPlaces(results.slice(0, 5));
+          const ok = window.google?.maps?.places ? window.google.maps.places.PlacesServiceStatus.OK : 'OK';
+          if (status === ok && results && results.length) {
+            const top = results.slice(0, 5);
+
+            const enriched = top.map((r) =>
+              new Promise((resolve) => {
+                service.getDetails(
+                  { placeId: r.place_id, fields: ['opening_hours', 'name', 'rating', 'vicinity', 'types'] },
+                  (detail, dStatus) => {
+                    const okDetail = window.google?.maps?.places ? window.google.maps.places.PlacesServiceStatus.OK : 'OK';
+                    let isOpenNow = false;
+                    if (dStatus === okDetail && detail && detail.opening_hours && typeof detail.opening_hours.isOpen === 'function') {
+                      try {
+                        isOpenNow = detail.opening_hours.isOpen();
+                      } catch (e) {
+                        isOpenNow = false;
+                      }
+                    }
+
+                    resolve({
+                      ...r,
+                      isOpenNow,
+                      vicinity: r.vicinity,
+                      types: r.types,
+                      rating: r.rating,
+                    });
+                  }
+                );
+              })
+            );
+
+            Promise.all(enriched).then((items) => setNearbyPlaces(items));
           }
         }
       );
@@ -267,11 +297,11 @@ export const PlaceDetailModal = ({ place, isOpen, onClose }) => {
                         {nearbyPlace.vicinity}
                       </p>
                       <div className="flex gap-2">
-                        {nearbyPlace.opening_hours?.open_now && (
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                            Open Now
-                          </span>
-                        )}
+                        {nearbyPlace.isOpenNow && (
+                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                                Open Now
+                              </span>
+                            )}
                         {nearbyPlace.types && (
                           <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded">
                             {nearbyPlace.types[0].replace(/_/g, ' ')}
