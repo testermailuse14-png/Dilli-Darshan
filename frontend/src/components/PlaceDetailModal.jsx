@@ -318,13 +318,7 @@ export const PlaceDetailModal = ({ place, isOpen, onClose }) => {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <Button
-                onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(place.title)}`)}
-                className="flex-1 bg-amber-600 hover:bg-amber-700"
-              >
-                View on Google Maps
-              </Button>
-              <Button onClick={onClose} variant="outline" className="flex-1">
+              <Button onClick={onClose} className="flex-1 bg-amber-600 hover:bg-amber-700">
                 Close
               </Button>
             </div>
