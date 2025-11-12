@@ -27,6 +27,13 @@ const hiddenGems = [
 ];
 
 export const HiddenGems = () => {
+  const mapMarkers = hiddenGems.map((gem) => ({
+    title: gem.name,
+    lat: gem.lat,
+    lng: gem.lng,
+    description: gem.description,
+  }));
+
   return (
     <main className="min-h-screen pt-24 pb-16 bg-linear-to-b from-white to-amber-600 ">
       <div className="max-w-7xl mx-auto px-4">
@@ -37,6 +44,14 @@ export const HiddenGems = () => {
           <p className="text-muted-foreground text-lg">
             Discover and share Delhi's best-kept secrets
           </p>
+        </div>
+
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Gems Location Map</h2>
+          <GoogleMapComponent
+            markers={mapMarkers}
+            zoom={12}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
