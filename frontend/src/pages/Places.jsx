@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import GoogleMapComponent from "@/components/GoogleMapComponent";
 import redFort from "@/assets/redfort.jpeg";
 import qutubMinar from "@/assets/qutub-minar.jpeg";
 import lotusTemple from "@/assets/lotustemple.jpeg";
@@ -14,6 +15,8 @@ const popularPlaces = [
     description:
       "A historic fort in Old Delhi that served as the main residence of the Mughal emperors.",
     location: "Netaji Subhash Marg, Chandni Chowk",
+    lat: 28.6562,
+    lng: 77.2410,
   },
   {
     name: "Qutub Minar",
@@ -21,6 +24,8 @@ const popularPlaces = [
     description:
       "A UNESCO World Heritage Site, this 73-meter tall minaret is a masterpiece of Indo-Islamic architecture.",
     location: "Mehrauli",
+    lat: 28.5244,
+    lng: 77.1855,
   },
   {
     name: "Lotus Temple",
@@ -28,6 +33,8 @@ const popularPlaces = [
     description:
       "A Bahá'í House of Worship noted for its flower-like shape and stunning modern architecture.",
     location: "Bahapur, Kalkaji",
+    lat: 28.5535,
+    lng: 77.2588,
   },
   {
     name: "Humayun's Tomb",
@@ -35,6 +42,8 @@ const popularPlaces = [
     description:
       "The tomb of the Mughal Emperor Humayun, a UNESCO World Heritage Site and inspiration for the Taj Mahal.",
     location: "Nizamuddin East",
+    lat: 28.5921,
+    lng: 77.2519,
   },
 ];
 
