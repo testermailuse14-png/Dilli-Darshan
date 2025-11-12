@@ -491,7 +491,7 @@ export const PlaceDetail = () => {
                           </div>
                           <p className="text-xs text-gray-600 mb-2">{nearby.vicinity}</p>
                           <div className="flex gap-2 flex-wrap">
-                            {nearby.opening_hours?.open_now && (
+                            {nearby.isOpenNow && (
                               <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
                                 Open Now
                               </span>
