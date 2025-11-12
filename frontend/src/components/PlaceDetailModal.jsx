@@ -299,11 +299,11 @@ export const PlaceDetailModal = ({ place, isOpen, onClose }) => {
                         {nearbyPlace.vicinity}
                       </p>
                       <div className="flex gap-2">
-                        {nearbyPlace.opening_hours?.open_now && (
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                            Open Now
-                          </span>
-                        )}
+                        {nearbyPlace.isOpenNow && (
+                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                                Open Now
+                              </span>
+                            )}
                         {nearbyPlace.types && (
                           <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded">
                             {nearbyPlace.types[0].replace(/_/g, ' ')}
