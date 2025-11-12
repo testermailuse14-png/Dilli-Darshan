@@ -10,7 +10,36 @@ import { Routes,Route} from 'react-router-dom';
 import { Toaster } from "sonner";
 
 
+import { useLoadScript } from '@react-google-maps/api';
+
 function App() {
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API,
+    libraries: ['places', 'geometry'],
+    preventGoogleFontsLoading: true,
+  });
+
+  if (loadError) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen pt-24 flex items-center justify-center">
+          <p className="text-gray-600">Error loading Google Maps</p>
+        </main>
+      </>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen pt-24 flex items-center justify-center">
+          <p className="text-gray-600">Loading map resources...</p>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>
