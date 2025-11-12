@@ -38,7 +38,10 @@ export const GoogleMapComponent = ({
   const containerStyle = { ...mapContainerStyle, height };
 
   return (
-    <LoadScript googleMapsApiKey={import.meta.env.REACT_APP_GOOGLE_MAPS_API}>
+    <LoadScript
+      googleMapsApiKey={import.meta.env.REACT_APP_GOOGLE_MAPS_API}
+      libraries={['places', 'geometry']}
+    >
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
