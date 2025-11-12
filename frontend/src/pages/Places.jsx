@@ -49,11 +49,21 @@ const popularPlaces = [
 
 export const Places = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPlace, setSelectedPlace] = useState(null);
 
   // Filtered places based on search
   const filteredPlaces = popularPlaces.filter((place) =>
     place.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Map markers
+  const mapMarkers = filteredPlaces.map((place) => ({
+    title: place.name,
+    lat: place.lat,
+    lng: place.lng,
+    description: place.description,
+    location: place.location,
+  }));
 
   return (
     <main className="min-h-screen pt-24 pb-16 bg-linear-to-b from-white to-amber-600">
@@ -66,7 +76,6 @@ export const Places = () => {
             Discover the most iconic destinations in Delhi
           </p>
 
-          {/* ✅ Fixed Input with onChange */}
           <div className="max-w-md mx-auto flex">
             <Input
               type="text"
@@ -74,16 +83,33 @@ export const Places = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button className="text-white px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 flex justify-center items-center">Search
-                <Search className="text-white" />
+            <button className="text-white px-4 rounded-2xl bg-amber-500 hover:bg-amber-400 flex justify-center items-center">
+              Search
+              <Search className="text-white" />
             </button>
           </div>
         </div>
 
-        {/* ✅ Render filtered places */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">Locations on Map</h2>
+          <GoogleMapComponent
+            markers={mapMarkers}
+            zoom={12}
+            onMarkerClick={(marker) => setSelectedPlace(marker)}
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPlaces.map((place, index) => (
-            <Card key={index} className="overflow-hidden shadow-lg">
+            <Card
+              key={index}
+              className="overflow-hidden shadow-lg cursor-pointer transition-all duration-300 hover:shadow-xl"
+              onClick={() => setSelectedPlace({
+                title: place.name,
+                description: place.description,
+                location: place.location,
+              })}
+            >
               <img
                 src={place.image}
                 alt={place.name}
