@@ -138,9 +138,55 @@ export const PlaceDetail = () => {
   };
 
   const fetchNearbyPlaces = (lat, lng) => {
-    getNearbyPlaces(lat, lng, 'cafe', 1000, (results) => {
-      setNearbyPlaces(results.slice(0, 5));
-    });
+    if (!window.google) return;
+    const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+
+    service.nearbySearch(
+      {
+        location: { lat, lng },
+        radius: 1000,
+        type: 'cafe',
+      },
+      (results, status) => {
+        const ok = window.google?.maps?.places ? window.google.maps.places.PlacesServiceStatus.OK : 'OK';
+        if (status === ok && results && results.length) {
+          const top = results.slice(0, 5);
+
+          const enriched = top.map((r) =>
+            new Promise((resolve) => {
+              // Fetch details to use opening_hours.isOpen() which replaced open_now
+              service.getDetails(
+                { placeId: r.place_id, fields: ['opening_hours', 'name', 'rating', 'vicinity', 'types'] },
+                (detail, dStatus) => {
+                  const okDetail = window.google?.maps?.places ? window.google.maps.places.PlacesServiceStatus.OK : 'OK';
+                  let isOpenNow = false;
+                  if (dStatus === okDetail && detail && detail.opening_hours && typeof detail.opening_hours.isOpen === 'function') {
+                    try {
+                      isOpenNow = detail.opening_hours.isOpen();
+                    } catch (e) {
+                      isOpenNow = false;
+                    }
+                  } else if (r.opening_hours && typeof r.opening_hours.open_now !== 'undefined') {
+                    // Fallback for older results
+                    isOpenNow = r.opening_hours.open_now;
+                  }
+
+                  resolve({
+                    ...r,
+                    isOpenNow,
+                    vicinity: r.vicinity,
+                    types: r.types,
+                    rating: r.rating,
+                  });
+                }
+              );
+            })
+          );
+
+          Promise.all(enriched).then((items) => setNearbyPlaces(items));
+        }
+      }
+    );
   };
 
   const handleShare = () => {
