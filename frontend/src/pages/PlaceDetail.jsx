@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getPlaceDetails, getNearbyPlaces } from '@/lib/placeService';
 import GoogleMapComponent from '@/components/GoogleMapComponent';
 import { Card } from '@/components/ui/card';
@@ -19,9 +19,41 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+const popularPlaces = [
+  {
+    name: "Red Fort",
+    description: "A historic fort in Old Delhi that served as the main residence of the Mughal emperors.",
+    location: "Netaji Subhash Marg, Chandni Chowk",
+    lat: 28.6562,
+    lng: 77.2410,
+  },
+  {
+    name: "Qutub Minar",
+    description: "A UNESCO World Heritage Site, this 73-meter tall minaret is a masterpiece of Indo-Islamic architecture.",
+    location: "Mehrauli",
+    lat: 28.5244,
+    lng: 77.1855,
+  },
+  {
+    name: "Lotus Temple",
+    description: "A Bahá'í House of Worship noted for its flower-like shape and stunning modern architecture.",
+    location: "Bahapur, Kalkaji",
+    lat: 28.5535,
+    lng: 77.2588,
+  },
+  {
+    name: "Humayun's Tomb",
+    description: "The tomb of the Mughal Emperor Humayun, a UNESCO World Heritage Site and inspiration for the Taj Mahal.",
+    location: "Nizamuddin East",
+    lat: 28.5921,
+    lng: 77.2519,
+  },
+];
+
 export const PlaceDetail = () => {
   const { placeId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [place, setPlace] = useState(null);
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,19 +63,43 @@ export const PlaceDetail = () => {
 
   useEffect(() => {
     if (placeId) {
-      getPlaceDetails(decodeURIComponent(placeId), (data, error) => {
-        if (data) {
-          setPlace(data);
-          if (data.lat && data.lng) {
-            fetchNearbyPlaces(data.lat, data.lng);
-            fetchPhotos(decodeURIComponent(placeId));
-          }
-        } else {
-          toast.error('Failed to load place details');
-          navigate('/places');
+      const decodedPlaceId = decodeURIComponent(placeId);
+
+      // Check if it's a predefined place
+      const predefinedPlace = popularPlaces.find(p => p.name === decodedPlaceId);
+
+      if (predefinedPlace) {
+        // Handle predefined place
+        const placeData = {
+          title: predefinedPlace.name,
+          description: predefinedPlace.description,
+          location: predefinedPlace.location,
+          lat: predefinedPlace.lat,
+          lng: predefinedPlace.lng,
+          rating: 4.5,
+          userRatingsTotal: 1000,
+        };
+        setPlace(placeData);
+        if (predefinedPlace.lat && predefinedPlace.lng) {
+          fetchNearbyPlaces(predefinedPlace.lat, predefinedPlace.lng);
         }
         setLoading(false);
-      });
+      } else {
+        // Handle Google Places API result
+        getPlaceDetails(decodedPlaceId, (data, error) => {
+          if (data) {
+            setPlace(data);
+            if (data.lat && data.lng) {
+              fetchNearbyPlaces(data.lat, data.lng);
+              fetchPhotos(decodedPlaceId);
+            }
+          } else {
+            toast.error('Failed to load place details');
+            navigate('/places');
+          }
+          setLoading(false);
+        });
+      }
     }
   }, [placeId, navigate]);
 
