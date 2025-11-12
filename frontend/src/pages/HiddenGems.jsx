@@ -9,6 +9,7 @@ const initialHiddenGems = [
     name: "Agrasen ki Baoli",
     description: "A 60-meter long and 15-meter wide historical stepwell hidden in the heart of Delhi",
     submittedBy: "Priya S.",
+    address: "7B/25, Hailey Rd, Connaught Place, New Delhi, Delhi 110001",
     lat: 28.6304,
     lng: 77.1991,
   },
@@ -16,6 +17,7 @@ const initialHiddenGems = [
     name: "Lodhi Art District",
     description: "India's first public art district featuring stunning street art and murals",
     submittedBy: "Rahul M.",
+    address: "Lodhi Rd, Lodhi Colony, New Delhi, Delhi 110003",
     lat: 28.5933,
     lng: 77.2197,
   },
@@ -23,6 +25,7 @@ const initialHiddenGems = [
     name: "Sunder Nursery",
     description: "A 90-acre heritage park with Mughal-era monuments and beautiful gardens",
     submittedBy: "Ananya K.",
+    address: "Sunder Nagar, Nizamuddin West, New Delhi, Delhi 110013",
     lat: 28.5942,
     lng: 77.2470,
   }
