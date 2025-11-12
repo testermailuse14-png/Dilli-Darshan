@@ -167,3 +167,55 @@ export const getNearbyPlaces = (lat, lng, type = 'cafe', radius = 1000, callback
     })
     .catch(() => callback([], 'LOAD_ERROR'));
 };
+
+export const getPhotoForPlace = (name, lat, lng, callback) => {
+  if (!name) {
+    callback(null, 'NO_QUERY');
+    return;
+  }
+
+  loadGoogleMaps()
+    .then(() => {
+      const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+
+      service.nearbySearch(
+        {
+          location: { lat, lng },
+          radius: 2000,
+          keyword: name,
+          type: 'point_of_interest',
+        },
+        (results, status) => {
+          const G = (typeof window !== 'undefined' && window.google) ? window.google : null;
+          const okStatus = (G && G.maps && G.maps.places)
+            ? G.maps.places.PlacesServiceStatus.OK
+            : 'OK';
+
+          if (status === okStatus && results && results.length) {
+            const r = results[0];
+            if (r.photos && r.photos.length) {
+              const url = r.photos[0].getUrl({ maxWidth: 800, maxHeight: 600 });
+              callback(url, null);
+            } else if (r.place_id) {
+              service.getDetails({ placeId: r.place_id, fields: ['photos'] }, (detail, dstatus) => {
+                const okD = (window.google && window.google.maps && window.google.maps.places)
+                  ? window.google.maps.places.PlacesServiceStatus.OK
+                  : 'OK';
+                if (dstatus === okD && detail?.photos && detail.photos.length) {
+                  const url2 = detail.photos[0].getUrl({ maxWidth: 800, maxHeight: 600 });
+                  callback(url2, null);
+                } else {
+                  callback(null, dstatus);
+                }
+              });
+            } else {
+              callback(null, 'NO_PHOTO');
+            }
+          } else {
+            callback(null, status);
+          }
+        }
+      );
+    })
+    .catch(() => callback(null, 'LOAD_ERROR'));
+};
