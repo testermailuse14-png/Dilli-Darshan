@@ -214,7 +214,34 @@ export const HiddenGems = () => {
           ))}
         </div>
 
-        <HiddenGemsSubmit />
+        <HiddenGemsSubmit onAdd={(payload) => {
+          // parent will handle geocoding and adding
+          const { name, description, submittedBy, address, lat, lng } = payload;
+
+          const doAdd = (coords, formattedAddress) => {
+            const newGem = {
+              name,
+              description,
+              submittedBy: submittedBy || 'Anonymous',
+              address: formattedAddress || address || '',
+              lat: coords?.lat ?? (typeof lat === 'number' ? lat : (lat ? parseFloat(lat) : null)),
+              lng: coords?.lng ?? (typeof lng === 'number' ? lng : (lng ? parseFloat(lng) : null)),
+              image: null,
+            };
+            addGemToState(newGem);
+          };
+
+          if ((lat && lng) || (typeof lat === 'number' && typeof lng === 'number')) {
+            doAdd({ lat: parseFloat(lat), lng: parseFloat(lng) }, address);
+          } else if (address) {
+            geocodeAddress(address, (res, err) => {
+              if (res) doAdd({ lat: res.lat, lng: res.lng }, res.formatted_address);
+              else doAdd(null, address);
+            });
+          } else {
+            doAdd(null, '');
+          }
+        }} />
       </div>
     </main>
   );
