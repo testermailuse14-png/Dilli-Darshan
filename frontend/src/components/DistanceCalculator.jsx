@@ -67,6 +67,11 @@ export const DistanceCalculator = () => {
       return;
     }
 
+    if (!window.google || !window.google.maps) {
+      toast.error('Google Maps API is still loading. Please wait and try again.');
+      return;
+    }
+
     const service = new window.google.maps.DistanceMatrixService();
     service.getDistanceMatrix(
       {
@@ -76,7 +81,7 @@ export const DistanceCalculator = () => {
         unitSystem: window.google.maps.UnitSystem.METRIC,
       },
       (response, status) => {
-        if (status === 'OK') {
+        if (status === window.google.maps.DistanceMatrixStatus.OK) {
           const distanceValue = response.rows[0].elements[0].distance.value / 1000; // Convert to km
           setDistance(distanceValue);
 
