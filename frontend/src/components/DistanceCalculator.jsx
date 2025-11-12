@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { GoogleMap, LoadScript, Autocomplete, Marker } from '@react-google-maps/api';
+import { GoogleMap, Autocomplete, Marker } from '@react-google-maps/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
