@@ -150,55 +150,6 @@ export const HiddenGems = () => {
           </p>
         </div>
 
-        <div className="mb-6 max-w-3xl mx-auto">
-          <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-4 rounded-lg shadow-sm">
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Place name (required)"
-              className="border rounded px-3 py-2 w-full"
-            />
-            <input
-              name="submittedBy"
-              value={form.submittedBy || ''}
-              onChange={handleChange}
-              placeholder="Your name (optional)"
-              className="border rounded px-3 py-2 w-full"
-            />
-            <input
-              name="address"
-              value={form.address}
-              onChange={handleChange}
-              placeholder="Address (optional)"
-              className="border rounded px-3 py-2 w-full md:col-span-2"
-            />
-            <input
-              name="lat"
-              value={form.lat}
-              onChange={handleChange}
-              placeholder="Latitude (optional)"
-              className="border rounded px-3 py-2 w-full"
-            />
-            <input
-              name="lng"
-              value={form.lng}
-              onChange={handleChange}
-              placeholder="Longitude (optional)"
-              className="border rounded px-3 py-2 w-full"
-            />
-            <input
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              placeholder="Short description (optional)"
-              className="border rounded px-3 py-2 w-full md:col-span-2"
-            />
-            <div className="md:col-span-2 flex justify-end">
-              <button className="bg-amber-600 text-white px-4 py-2 rounded">Add Location</button>
-            </div>
-          </form>
-        </div>
 
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-4 text-gray-800">Gems Location Map</h2>
