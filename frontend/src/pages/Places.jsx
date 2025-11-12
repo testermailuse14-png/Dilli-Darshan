@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import GoogleMapComponent from "@/components/GoogleMapComponent";
-import PlaceDetailModal from "@/components/PlaceDetailModal";
-import { searchPlaces, getPlaceDetails } from "@/lib/placeService";
+import { searchPlaces } from "@/lib/placeService";
 import redFort from "@/assets/redfort.jpeg";
 import qutubMinar from "@/assets/qutub-minar.jpeg";
 import lotusTemple from "@/assets/lotustemple.jpeg";
