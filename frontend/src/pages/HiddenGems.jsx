@@ -22,9 +22,16 @@ export const HiddenGems = () => {
   const fetchGems = async () => {
     try {
       setLoading(true);
+      console.log('Fetching hidden gems...');
       const response = await hiddenGemsApi.getAll();
+      console.log('Response:', response);
       const gemsData = response.gems || [];
-      
+      console.log('Gems data:', gemsData);
+
+      if (!gemsData || gemsData.length === 0) {
+        console.warn('No gems returned from API');
+      }
+
       setGems(gemsData.map(g => ({
         ...g,
         submittedBy: g.user?.email || 'Anonymous',
@@ -47,7 +54,8 @@ export const HiddenGems = () => {
       });
     } catch (error) {
       console.error('Error fetching gems:', error);
-      toast.error('Failed to load hidden gems');
+      console.error('API URL:', import.meta.env.VITE_API_URL);
+      toast.error('Failed to load hidden gems: ' + error.message);
     } finally {
       setLoading(false);
     }
