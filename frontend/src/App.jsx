@@ -6,10 +6,9 @@ import { CabCalculatorPage } from './pages/CabBooking';
 import { HiddenGems  } from './pages/HiddenGems';
 import { Auth } from './pages/Auth';
 import './App.css'
-import { Routes,Route} from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Toaster } from "sonner";
-
-
+import { AuthProvider } from './context/AuthContext';
 import { useLoadScript } from '@react-google-maps/api';
 
 function App() {
@@ -41,7 +40,7 @@ function App() {
   }
 
   return (
-    <>
+    <AuthProvider>
       <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -57,8 +56,7 @@ function App() {
               closeButton
               duration={3000}
         />
-
-    </>
+    </AuthProvider>
   )
 }
 
