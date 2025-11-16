@@ -11,7 +11,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from './context/AuthContext';
 import { useLoadScript } from '@react-google-maps/api';
 
-function App() {
+function AppContent() {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries: ['places', 'geometry'],
@@ -40,22 +40,30 @@ function App() {
   }
 
   return (
-    <AuthProvider>
+    <>
       <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/places" element={<Places/>} />
-          <Route path="/places/:placeId" element={<PlaceDetail />} />
-          <Route path="/cab-booking" element={<CabCalculatorPage />} />
-          <Route path="/hidden-gems" element={<HiddenGems />} />
-          <Route path="/signin" element={<Auth />} />
-        </Routes>
-        <Toaster
-              position="bottom-center"
-              richColors
-              closeButton
-              duration={3000}
-        />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/places" element={<Places/>} />
+        <Route path="/places/:placeId" element={<PlaceDetail />} />
+        <Route path="/cab-booking" element={<CabCalculatorPage />} />
+        <Route path="/hidden-gems" element={<HiddenGems />} />
+        <Route path="/signin" element={<Auth />} />
+      </Routes>
+      <Toaster
+            position="bottom-center"
+            richColors
+            closeButton
+            duration={3000}
+      />
+    </>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
     </AuthProvider>
   )
 }
