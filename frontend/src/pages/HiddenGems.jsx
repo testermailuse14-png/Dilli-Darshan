@@ -1,64 +1,56 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import HiddenGemCard from "@/components/HiddenGemCard";
 import HiddenGemsSubmit from "@/components/HiddenGemsSubmit";
 import GoogleMapComponent from "@/components/GoogleMapComponent";
 import { getPhotoForPlace, geocodeAddress } from '@/lib/placeService';
 import { MapPin } from "lucide-react";
-
-const initialHiddenGems = [
-  {
-    name: "Agrasen ki Baoli",
-    description: "A 60-meter long and 15-meter wide historical stepwell hidden in the heart of Delhi",
-    submittedBy: "Priya S.",
-    address: "7B/25, Hailey Rd, Connaught Place, New Delhi, Delhi 110001",
-    lat: 28.6304,
-    lng: 77.1991,
-  },
-  {
-    name: "Lodhi Art District",
-    description: "India's first public art district featuring stunning street art and murals",
-    submittedBy: "Rahul M.",
-    address: "Lodhi Rd, Lodhi Colony, New Delhi, Delhi 110003",
-    lat: 28.5933,
-    lng: 77.2197,
-  },
-  {
-    name: "Sunder Nursery",
-    description: "A 90-acre heritage park with Mughal-era monuments and beautiful gardens",
-    submittedBy: "Ananya K.",
-    address: "Sunder Nagar, Nizamuddin West, New Delhi, Delhi 110013",
-    lat: 28.5942,
-    lng: 77.2470,
-  }
-];
+import { useAuth } from '@/context/AuthContext';
+import { hiddenGemsApi } from '@/lib/api';
+import { toast } from 'sonner';
 
 export const HiddenGems = () => {
-  const [gems, setGems] = useState(
-    initialHiddenGems.map((g) => ({ ...g, image: null }))
-  );
-
-  const [form, setForm] = useState({ name: '', description: '', address: '', lat: '', lng: '' });
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const [gems, setGems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch photos for each gem and update state
-    gems.forEach((gem, idx) => {
-      if (gem.image) return; // already loaded
-      getPhotoForPlace(gem.name, gem.lat, gem.lng, (url, err) => {
-        if (url) {
-          setGems((prev) => {
-            const copy = [...prev];
-            copy[idx] = { ...copy[idx], image: url };
-            return copy;
-          });
-        }
-      });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchGems();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const fetchGems = async () => {
+    try {
+      setLoading(true);
+      const response = await hiddenGemsApi.getAll();
+      const gemsData = response.gems || [];
+      
+      setGems(gemsData.map(g => ({
+        ...g,
+        submittedBy: g.user?.email || 'Anonymous',
+        image: null,
+      })));
+
+      // Fetch photos for each gem
+      gemsData.forEach((gem, idx) => {
+        getPhotoForPlace(gem.name, gem.lat, gem.lng, (url) => {
+          if (url) {
+            setGems((prev) => {
+              const copy = [...prev];
+              if (copy[idx]) {
+                copy[idx] = { ...copy[idx], image: url };
+              }
+              return copy;
+            });
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Error fetching gems:', error);
+      toast.error('Failed to load hidden gems');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addGemToState = (newGem) => {
@@ -76,58 +68,66 @@ export const HiddenGems = () => {
     });
   };
 
-  const handleAdd = async (e) => {
-    e.preventDefault();
-    const { name, description, address, lat, lng } = form;
-    if (!name) return;
+  const handleAdd = async (payload) => {
+    if (!isAuthenticated) {
+      toast.error('Please sign in to share a hidden gem');
+      navigate('/signin');
+      return;
+    }
 
-    if (lat && lng) {
-      const parsedLat = parseFloat(lat);
-      const parsedLng = parseFloat(lng);
-      const newGem = {
+    try {
+      const { name, description, address, lat, lng } = payload;
+      
+      if (!name) {
+        toast.error('Name is required');
+        return;
+      }
+
+      let finalLat = lat;
+      let finalLng = lng;
+      let finalAddress = address;
+
+      // If we have coordinates, use them directly
+      if (lat && lng) {
+        finalLat = typeof lat === 'string' ? parseFloat(lat) : lat;
+        finalLng = typeof lng === 'string' ? parseFloat(lng) : lng;
+      } else if (address) {
+        // Geocode the address
+        const geocodePromise = new Promise((resolve) => {
+          geocodeAddress(address, (res) => {
+            if (res) {
+              finalLat = res.lat;
+              finalLng = res.lng;
+              finalAddress = res.formatted_address;
+            }
+            resolve();
+          });
+        });
+
+        await geocodePromise;
+      }
+
+      // Create the gem on the backend
+      const response = await hiddenGemsApi.create({
         name,
         description,
-        submittedBy: 'Anonymous',
-        address: address || '',
-        lat: Number.isFinite(parsedLat) ? parsedLat : null,
-        lng: Number.isFinite(parsedLng) ? parsedLng : null,
+        address: finalAddress || address || '',
+        lat: finalLat,
+        lng: finalLng,
+      });
+
+      const newGem = {
+        ...response.gem,
+        submittedBy: response.gem.user?.email || 'Anonymous',
         image: null,
       };
+
       addGemToState(newGem);
-      setForm({ name: '', description: '', address: '', lat: '', lng: '' });
-      return;
+      toast.success('Hidden gem shared successfully!');
+    } catch (error) {
+      console.error('Error adding gem:', error);
+      toast.error(error.message || 'Failed to share hidden gem');
     }
-
-    if (address) {
-      // geocode address
-      geocodeAddress(address, (res, err) => {
-        const newGem = {
-          name,
-          description,
-          submittedBy: 'Anonymous',
-          address: res?.formatted_address || address,
-          lat: res?.lat ?? null,
-          lng: res?.lng ?? null,
-          image: null,
-        };
-        addGemToState(newGem);
-        setForm({ name: '', description: '', address: '', lat: '', lng: '' });
-      });
-      return;
-    }
-
-    // fallback: add without coords/address
-    const newGem = {
-      name,
-      description,
-      submittedBy: 'Anonymous',
-      address: '',
-      lat: null,
-      lng: null,
-      image: null,
-    };
-    addGemToState(newGem);
-    setForm({ name: '', description: '', address: '', lat: '', lng: '' });
   };
 
   const mapMarkers = gems
@@ -140,6 +140,14 @@ export const HiddenGems = () => {
       location: gem.address || '',
     }));
 
+  if (loading) {
+    return (
+      <main className="min-h-screen pt-24 pb-16 bg-linear-to-b from-white to-amber-600 flex items-center justify-center">
+        <p className="text-gray-600">Loading hidden gems...</p>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen pt-24 pb-16 bg-linear-to-b from-white to-amber-600 ">
       <div className="max-w-7xl mx-auto px-4">
@@ -151,7 +159,6 @@ export const HiddenGems = () => {
             Discover and share Delhi's best-kept secrets
           </p>
         </div>
-
 
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-4 text-gray-800">Gems Location Map</h2>
@@ -167,34 +174,23 @@ export const HiddenGems = () => {
           ))}
         </div>
 
-        <HiddenGemsSubmit onAdd={(payload) => {
-          // parent will handle geocoding and adding
-          const { name, description, submittedBy, address, lat, lng } = payload;
+        {!isAuthenticated && (
+          <div className="mb-12 p-6 bg-amber-50 border-2 border-amber-200 rounded-lg text-center">
+            <p className="text-lg font-semibold text-amber-900 mb-4">
+              Sign in to share your hidden gem discoveries!
+            </p>
+            <button
+              onClick={() => navigate('/signin')}
+              className="px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-colors"
+            >
+              Sign In to Share
+            </button>
+          </div>
+        )}
 
-          const doAdd = (coords, formattedAddress) => {
-            const newGem = {
-              name,
-              description,
-              submittedBy: submittedBy || 'Anonymous',
-              address: formattedAddress || address || '',
-              lat: coords?.lat ?? (typeof lat === 'number' ? lat : (lat ? parseFloat(lat) : null)),
-              lng: coords?.lng ?? (typeof lng === 'number' ? lng : (lng ? parseFloat(lng) : null)),
-              image: null,
-            };
-            addGemToState(newGem);
-          };
-
-          if ((lat && lng) || (typeof lat === 'number' && typeof lng === 'number')) {
-            doAdd({ lat: parseFloat(lat), lng: parseFloat(lng) }, address);
-          } else if (address) {
-            geocodeAddress(address, (res, err) => {
-              if (res) doAdd({ lat: res.lat, lng: res.lng }, res.formatted_address);
-              else doAdd(null, address);
-            });
-          } else {
-            doAdd(null, '');
-          }
-        }} />
+        {isAuthenticated && (
+          <HiddenGemsSubmit onAdd={handleAdd} />
+        )}
       </div>
     </main>
   );
