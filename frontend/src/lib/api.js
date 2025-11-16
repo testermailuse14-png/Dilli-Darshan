@@ -1,0 +1,67 @@
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+export const apiCall = async (endpoint, options = {}) => {
+  const token = localStorage.getItem('authToken');
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'API error');
+  }
+
+  return response.json();
+};
+
+// Auth endpoints
+export const authApi = {
+  signUp: (email, password) =>
+    apiCall('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+  
+  signIn: (email, password) =>
+    apiCall('/auth/signin', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+  
+  getMe: () => apiCall('/auth/me'),
+};
+
+// Hidden Gems endpoints
+export const hiddenGemsApi = {
+  getAll: () => apiCall('/hidden-gems'),
+  
+  getById: (id) => apiCall(`/hidden-gems/${id}`),
+  
+  create: (data) =>
+    apiCall('/hidden-gems', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  
+  update: (id, data) =>
+    apiCall(`/hidden-gems/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  
+  delete: (id) =>
+    apiCall(`/hidden-gems/${id}`, {
+      method: 'DELETE',
+    }),
+};

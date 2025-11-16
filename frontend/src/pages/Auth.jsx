@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useAuth } from "@/context/AuthContext";
+import { authApi } from "@/lib/api";
 import logo from "/logo.jpg";
 
 // Validation schemas
@@ -26,6 +28,7 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 
 export const Auth = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
 
   // Sign In state
@@ -38,7 +41,7 @@ export const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   // Handle Sign In
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -46,14 +49,16 @@ export const Auth = () => {
       emailSchema.parse(signInEmail);
       passwordSchema.parse(signInPassword);
 
-      // Mock sign-in success
+      const response = await authApi.signIn(signInEmail, signInPassword);
+      
+      login(response.user, response.token);
       toast.success("Signed in successfully!");
       navigate("/");
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error("Something went wrong. Try again!");
+        toast.error(error.message || "Something went wrong. Try again!");
       }
     } finally {
       setLoading(false);
@@ -61,7 +66,7 @@ export const Auth = () => {
   };
 
   // Handle Sign Up
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -75,16 +80,16 @@ export const Auth = () => {
         return;
       }
 
-      // Mock sign-up success
-      toast.success("Account created successfully! You can now sign in.");
-      setSignUpEmail("");
-      setSignUpPassword("");
-      setConfirmPassword("");
+      const response = await authApi.signUp(signUpEmail, signUpPassword);
+      
+      login(response.user, response.token);
+      toast.success("Account created successfully!");
+      navigate("/");
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
       } else {
-        toast.error("Something went wrong. Try again!");
+        toast.error(error.message || "Something went wrong. Try again!");
       }
     } finally {
       setLoading(false);

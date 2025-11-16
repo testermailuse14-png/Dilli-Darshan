@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, MapPin, Car, Gem, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
-export function Navbar({ isLoggedIn, user, onLogout }) {
+export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -70,11 +72,11 @@ export function Navbar({ isLoggedIn, user, onLogout }) {
 
           {/* Auth Section */}
           <div className="hidden md:flex items-center">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <div className="flex items-center space-x-3">
-                <p className="text-sm font-medium text-gray-800">{user?.name}</p>
+                <p className="text-sm font-medium text-gray-800">{user?.email}</p>
                 <button
-                  onClick={onLogout}
+                  onClick={logout}
                   className="relative flex items-center gap-2 px-6 py-2 rounded-2xl font-semibold text-white bg-gradient-to-b from-red-400 to-red-600 shadow-[0_4px_0_#991b1b] transition-all duration-300 hover:shadow-[0_6px_12px_rgba(239,68,68,0.6)] hover:-translate-y-1 active:translate-y-0 active:shadow-[0_2px_0_#991b1b] before:absolute before:inset-0 before:rounded-2xl before:bg-white/10 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
                 >
                   <LogOut className="h-4 w-4" />
@@ -139,10 +141,10 @@ export function Navbar({ isLoggedIn, user, onLogout }) {
                   </Link>
                 );
               })}
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <button
                   onClick={() => {
-                    onLogout();
+                    logout();
                     setIsMenuOpen(false);
                   }}
                   className="w-full text-left px-3 py-2 flex items-center gap-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md"

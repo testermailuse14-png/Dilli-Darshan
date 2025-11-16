@@ -17,12 +17,12 @@ export const Home = () => {
           <h2 className="text-white text-2xl font-bold mt-2">Like Never before</h2>
         </div>
         <div className="space-x-5 pt-5">
-          <button className="relative px-6 py-2 rounded-2xl font-semibold text-white bg-gradient-to-b from-amber-400 to-amber-600 shadow-[0_4px_0_#b45309] transition-all duration-300 hover:shadow-[0_6px_12px_rgba(245,158,11,0.6)] hover:-translate-y-1 active:translate-y-0 active:shadow-[0_2px_0_#b45309]">
+          <Link to="/places" className="relative inline-block px-6 py-2 rounded-2xl font-semibold text-white bg-gradient-to-b from-amber-400 to-amber-600 shadow-[0_4px_0_#b45309] transition-all duration-300 hover:shadow-[0_6px_12px_rgba(245,158,11,0.6)] hover:-translate-y-1 active:translate-y-0 active:shadow-[0_2px_0_#b45309]">
             Explore
-          </button>
-          <button className="relative px-6 py-2 rounded-2xl font-semibold text-white bg-gradient-to-b from-amber-400 to-amber-600 shadow-[0_4px_0_#b45309] transition-all duration-300 hover:shadow-[0_6px_12px_rgba(245,158,11,0.6)] hover:-translate-y-1 active:translate-y-0 active:shadow-[0_2px_0_#b45309]">
+          </Link>
+          <Link to="/signin" className="relative inline-block px-6 py-2 rounded-2xl font-semibold text-white bg-gradient-to-b from-amber-400 to-amber-600 shadow-[0_4px_0_#b45309] transition-all duration-300 hover:shadow-[0_6px_12px_rgba(245,158,11,0.6)] hover:-translate-y-1 active:translate-y-0 active:shadow-[0_2px_0_#b45309]">
             Sign Up
-          </button>
+          </Link>
         </div>
             <motion.div
               animate={{ y: [0, 10, 0] }}  // moves down slightly and back up
