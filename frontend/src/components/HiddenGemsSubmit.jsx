@@ -10,7 +10,6 @@ import { toast } from "sonner";
 const HiddenGemsSubmit = ({ onAdd }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [submitter, setSubmitter] = useState("");
   const [address, setAddress] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
@@ -26,7 +25,6 @@ const HiddenGemsSubmit = ({ onAdd }) => {
     const payload = {
       name,
       description,
-      submittedBy: submitter || 'Anonymous',
       address: address || '',
       lat: lat ? parseFloat(lat) : null,
       lng: lng ? parseFloat(lng) : null,
@@ -42,7 +40,6 @@ const HiddenGemsSubmit = ({ onAdd }) => {
     // Reset form
     setName("");
     setDescription("");
-    setSubmitter("");
     setAddress("");
     setLat("");
     setLng("");
@@ -79,16 +76,6 @@ const HiddenGemsSubmit = ({ onAdd }) => {
             />
           </div>
 
-          <div className="space-y-2">
-          <Label htmlFor="submitter-name">Your Name</Label>
-          <Input
-            id="submitter-name"
-            placeholder="Enter your name..."
-            value={submitter}
-            onChange={(e) => setSubmitter(e.target.value)}
-          />
-        </div>
-
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label htmlFor="gem-address">Address</Label>
@@ -99,25 +86,25 @@ const HiddenGemsSubmit = ({ onAdd }) => {
               onChange={(e) => setAddress(e.target.value)}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="gem-lat">Latitude</Label>
-            <Input
-              id="gem-lat"
-              placeholder="Latitude"
-              value={lat}
-              onChange={(e) => setLat(e.target.value)}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="gem-lat">Latitude</Label>
+              <Input
+                id="gem-lat"
+                placeholder="Latitude"
+                value={lat}
+                onChange={(e) => setLat(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="gem-lng">Longitude</Label>
+              <Input
+                id="gem-lng"
+                placeholder="Longitude"
+                value={lng}
+                onChange={(e) => setLng(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="gem-lng">Longitude</Label>
-            <Input
-              id="gem-lng"
-              placeholder="Longitude"
-              value={lng}
-              onChange={(e) => setLng(e.target.value)}
-            />
-          </div>
-        </div>
 
         <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700" size="lg">
           Submit Hidden Gem
