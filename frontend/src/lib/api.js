@@ -1,4 +1,4 @@
-const API_URL = `https://dilli-darshan.onrender.com/api` ;
+const API_URL = `https://dilli-darshan.onrender.com` ;
 
 export const apiCall = async (endpoint, options = {}) => {
   const token = localStorage.getItem('authToken');
@@ -28,40 +28,40 @@ export const apiCall = async (endpoint, options = {}) => {
 // Auth endpoints
 export const authApi = {
   signUp: (email, password) =>
-    apiCall('/auth/signup', {
+    apiCall('/api/auth/signup', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
   
   signIn: (email, password) =>
-    apiCall('/auth/signin', {
+    apiCall('/api/auth/signin', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
   
-  getMe: () => apiCall('/auth/me'),
+  getMe: () => apiCall('/api/auth/me'),
 };
 
 // Hidden Gems endpoints
 export const hiddenGemsApi = {
-  getAll: () => apiCall('/hidden-gems'),
+  getAll: () => apiCall('/api/hidden-gems'),
   
-  getById: (id) => apiCall(`/hidden-gems/${id}`),
+  getById: (id) => apiCall(`/api/hidden-gems/${id}`),
   
   create: (data) =>
-    apiCall('/hidden-gems', {
+    apiCall('/api/hidden-gems', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
   
   update: (id, data) =>
-    apiCall(`/hidden-gems/${id}`, {
+    apiCall(`/api/hidden-gems/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
   
   delete: (id) =>
-    apiCall(`/hidden-gems/${id}`, {
+    apiCall(`/api/hidden-gems/${id}`, {
       method: 'DELETE',
     }),
 };
