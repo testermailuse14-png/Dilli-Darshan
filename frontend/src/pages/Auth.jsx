@@ -40,6 +40,20 @@ export const Auth = () => {
   const [signUpPassword, setSignUpPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // Reusable error handler
+  const handleAuthError = (error, context) => {
+    console.error(`${context} Error:`, error); // Log with context
+
+    if (error instanceof z.ZodError) {
+      toast.error(error.errors?.[0]?.message || "Validation error");
+    } else if (error.response?.data?.message) {
+      // Handles specific API errors (e.g., "Email already exists")
+      toast.error(error.response.data.message);
+    } else {
+      toast.error(error.message || "Something went wrong. Try again!");
+    }
+  };
+
   // Handle Sign In
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -50,18 +64,14 @@ export const Auth = () => {
       passwordSchema.parse(signInPassword);
 
       const response = await authApi.signIn(signInEmail, signInPassword);
-      
+
       login(response.user, response.token);
       toast.success("Signed in successfully!");
       navigate("/");
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error(error.errors[0].message);
-      } else {
-        toast.error(error.message || "Something went wrong. Try again!");
-      }
+      handleAuthError(error, "Sign In");
     } finally {
-      setLoading(false);
+      setLoading(false); // Ensures button is re-enabled on error
     }
   };
 
@@ -76,21 +86,16 @@ export const Auth = () => {
 
       if (signUpPassword !== confirmPassword) {
         toast.error("Passwords do not match");
-        setLoading(false);
-        return;
-      }
-
-      const response = await authApi.signUp(signUpEmail, signUpPassword);
-      
-      login(response.user, response.token);
-      toast.success("Account created successfully!");
-      navigate("/");
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error(error.errors[0].message);
+        // No need for 'return' here, finally will still run
       } else {
-        toast.error(error.message || "Something went wrong. Try again!");
+        const response = await authApi.signUp(signUpEmail, signUpPassword);
+
+        login(response.user, response.token);
+        toast.success("Account created successfully!");
+        navigate("/");
       }
+    } catch (error) {
+      handleAuthError(error, "Sign Up");
     } finally {
       setLoading(false);
     }
@@ -134,6 +139,7 @@ export const Auth = () => {
                     value={signInEmail}
                     onChange={(e) => setSignInEmail(e.target.value)}
                     required
+                    disabled={loading} // Disable inputs while loading
                   />
                 </div>
                 <div className="space-y-2">
@@ -145,6 +151,7 @@ export const Auth = () => {
                     value={signInPassword}
                     onChange={(e) => setSignInPassword(e.target.value)}
                     required
+                    disabled={loading} // Disable inputs while loading
                   />
                 </div>
                 <Button
@@ -169,6 +176,7 @@ export const Auth = () => {
                     value={signUpEmail}
                     onChange={(e) => setSignUpEmail(e.target.value)}
                     required
+                    disabled={loading} // Disable inputs while loading
                   />
                 </div>
                 <div className="space-y-2">
@@ -180,6 +188,7 @@ export const Auth = () => {
                     value={signUpPassword}
                     onChange={(e) => setSignUpPassword(e.target.value)}
                     required
+                    disabled={loading} // Disable inputs while loading
                   />
                 </div>
                 <div className="space-y-2">
@@ -191,6 +200,7 @@ export const Auth = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                    disabled={loading} // Disable inputs while loading
                   />
                 </div>
                 <Button
